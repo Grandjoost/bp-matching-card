@@ -219,25 +219,73 @@ function BKDetailPanel({ bk }: { bk: BKResult }) {
 
   return (
     <PanelBody>
-      {/* Header: Foto + Score + Status + Agentur */}
+      {/* Header: Links Foto+Info, Rechts Bewertung */}
       <PanelSection>
-        <Flex direction="column" gap="md">
-          {bk.avatarUrl && (
-            <Flex direction="row" justify="center">
-              <Image src={bk.avatarUrl} alt={bk.name} width={120} />
+        <Flex direction="row" gap="md" align="start">
+          {/* Links: Foto + Agentur + Score + Status */}
+          <Box flex={1}>
+            <Flex direction="column" gap="sm" align="start">
+              {bk.avatarUrl && (
+                <Image src={bk.avatarUrl} alt={bk.name} width={120} />
+              )}
+              {details.agentur && (
+                <Heading>{details.agentur}</Heading>
+              )}
+              <Flex direction="row" gap="sm" align="center">
+                <Tag variant={getScoreVariant(bk.score)}>{bk.score}%</Tag>
+                {bk.stars > 0 && <Text>{STAR_DISPLAY[bk.stars]}</Text>}
+                <StatusTag variant={getStatusTag(bk.einsatzStatus).variant}>
+                  {getStatusTag(bk.einsatzStatus).label}
+                </StatusTag>
+              </Flex>
             </Flex>
-          )}
-          <Flex direction="row" gap="sm" justify="center" align="center">
-            <Tag variant={getScoreVariant(bk.score)}>{bk.score}%</Tag>
-            {bk.stars > 0 && <Text>{STAR_DISPLAY[bk.stars]}</Text>}
-            <StatusTag variant={getStatusTag(bk.einsatzStatus).variant}>
-              {getStatusTag(bk.einsatzStatus).label}
-            </StatusTag>
-          </Flex>
-          {details.agentur && (
-            <Flex direction="row" justify="center">
-              <Heading>{details.agentur}</Heading>
-            </Flex>
+          </Box>
+
+          {/* Rechts: Bewertung */}
+          {details.bewertung && details.bewertung.anzahl > 0 && (
+            <Box flex={1}>
+              <Flex direction="column" gap="xs">
+                <Text format={{ fontWeight: "bold" }}>Bewertungen ({details.bewertung.anzahl})</Text>
+                <DescriptionList direction="column">
+                  <DescriptionListItem label="Gesamt Ø">
+                    <Text>{avgToStars(details.bewertung.durchschnitt)} {details.bewertung.durchschnitt.toFixed(1)}</Text>
+                  </DescriptionListItem>
+                  {details.bewertung.freundlichkeit > 0 && (
+                    <DescriptionListItem label="Freundlichkeit">
+                      <Text>{avgToStars(details.bewertung.freundlichkeit)} {details.bewertung.freundlichkeit.toFixed(1)}</Text>
+                    </DescriptionListItem>
+                  )}
+                  {details.bewertung.puenktlichkeit > 0 && (
+                    <DescriptionListItem label="Pünktlichkeit">
+                      <Text>{avgToStars(details.bewertung.puenktlichkeit)} {details.bewertung.puenktlichkeit.toFixed(1)}</Text>
+                    </DescriptionListItem>
+                  )}
+                  {details.bewertung.fachkenntnis > 0 && (
+                    <DescriptionListItem label="Fachkenntnis">
+                      <Text>{avgToStars(details.bewertung.fachkenntnis)} {details.bewertung.fachkenntnis.toFixed(1)}</Text>
+                    </DescriptionListItem>
+                  )}
+                  {details.bewertung.kommunikation > 0 && (
+                    <DescriptionListItem label="Kommunikation">
+                      <Text>{avgToStars(details.bewertung.kommunikation)} {details.bewertung.kommunikation.toFixed(1)}</Text>
+                    </DescriptionListItem>
+                  )}
+                  {details.bewertung.hygiene > 0 && (
+                    <DescriptionListItem label="Hygiene">
+                      <Text>{avgToStars(details.bewertung.hygiene)} {details.bewertung.hygiene.toFixed(1)}</Text>
+                    </DescriptionListItem>
+                  )}
+                  {details.bewertung.gesamt > 0 && (
+                    <DescriptionListItem label="Allg. Zufriedenh.">
+                      <Text>{avgToStars(details.bewertung.gesamt)} {details.bewertung.gesamt.toFixed(1)}</Text>
+                    </DescriptionListItem>
+                  )}
+                  <DescriptionListItem label="Weiterempfehlung">
+                    <Text>{details.bewertung.weiterempfehlungen} von {details.bewertung.anzahl}</Text>
+                  </DescriptionListItem>
+                </DescriptionList>
+              </Flex>
+            </Box>
           )}
         </Flex>
       </PanelSection>
@@ -245,7 +293,7 @@ function BKDetailPanel({ bk }: { bk: BKResult }) {
       {/* Persönliche Daten — 2 Spalten */}
       <PanelSection>
         <Text format={{ fontWeight: "bold" }}>Persönliche Daten</Text>
-        <Flex direction="row" gap="lg">
+        <Flex direction="row" gap="md">
           <Box flex={1}>
             <DescriptionList direction="column">
               {profil.anrede && (
@@ -318,7 +366,7 @@ function BKDetailPanel({ bk }: { bk: BKResult }) {
       {/* Betreuungsprofil — 2 Spalten */}
       <PanelSection>
         <Text format={{ fontWeight: "bold" }}>Betreuungsprofil</Text>
-        <Flex direction="row" gap="lg">
+        <Flex direction="row" gap="md">
           <Box flex={1}>
             <DescriptionList direction="column">
               <DescriptionListItem label="Kategorie">
@@ -357,7 +405,7 @@ function BKDetailPanel({ bk }: { bk: BKResult }) {
       {/* Ausbildung — 2 Spalten */}
       <PanelSection>
         <Text format={{ fontWeight: "bold" }}>Ausbildung</Text>
-        <Flex direction="row" gap="lg">
+        <Flex direction="row" gap="md">
           <Box flex={1}>
             <DescriptionList direction="column">
               {profil.ausbildungen && (
@@ -428,51 +476,6 @@ function BKDetailPanel({ bk }: { bk: BKResult }) {
           )}
         </DescriptionList>
       </PanelSection>
-
-      {/* Bewertungen */}
-      {details.bewertung && details.bewertung.anzahl > 0 && (
-        <PanelSection>
-          <Text format={{ fontWeight: "bold" }}>Bewertungen</Text>
-          <DescriptionList direction="column">
-            <DescriptionListItem label={`Gesamt (${details.bewertung.anzahl} Bewertungen)`}>
-              <Text>{avgToStars(details.bewertung.durchschnitt)} {details.bewertung.durchschnitt.toFixed(1)}</Text>
-            </DescriptionListItem>
-            {details.bewertung.freundlichkeit > 0 && (
-              <DescriptionListItem label="Freundlichkeit">
-                <Text>{avgToStars(details.bewertung.freundlichkeit)} {details.bewertung.freundlichkeit.toFixed(1)}</Text>
-              </DescriptionListItem>
-            )}
-            {details.bewertung.puenktlichkeit > 0 && (
-              <DescriptionListItem label="Pünktlichkeit">
-                <Text>{avgToStars(details.bewertung.puenktlichkeit)} {details.bewertung.puenktlichkeit.toFixed(1)}</Text>
-              </DescriptionListItem>
-            )}
-            {details.bewertung.fachkenntnis > 0 && (
-              <DescriptionListItem label="Fachkenntnis">
-                <Text>{avgToStars(details.bewertung.fachkenntnis)} {details.bewertung.fachkenntnis.toFixed(1)}</Text>
-              </DescriptionListItem>
-            )}
-            {details.bewertung.kommunikation > 0 && (
-              <DescriptionListItem label="Kommunikation">
-                <Text>{avgToStars(details.bewertung.kommunikation)} {details.bewertung.kommunikation.toFixed(1)}</Text>
-              </DescriptionListItem>
-            )}
-            {details.bewertung.hygiene > 0 && (
-              <DescriptionListItem label="Hygiene">
-                <Text>{avgToStars(details.bewertung.hygiene)} {details.bewertung.hygiene.toFixed(1)}</Text>
-              </DescriptionListItem>
-            )}
-            {details.bewertung.gesamt > 0 && (
-              <DescriptionListItem label="Allg. Zufriedenheit">
-                <Text>{avgToStars(details.bewertung.gesamt)} {details.bewertung.gesamt.toFixed(1)}</Text>
-              </DescriptionListItem>
-            )}
-            <DescriptionListItem label="Weiterempfehlung">
-              <Text>{details.bewertung.weiterempfehlungen} von {details.bewertung.anzahl}</Text>
-            </DescriptionListItem>
-          </DescriptionList>
-        </PanelSection>
-      )}
 
       {/* Kontakt öffnen */}
       <PanelSection>
@@ -608,7 +611,7 @@ function BKMatchingCard({ context }: { context: any }) {
               size="xs"
               onClick={() => {}}
               overlay={
-                <Panel id={`panel-${bk.contactId}`} title={bk.name} width="lg">
+                <Panel id={`panel-${bk.contactId}`} title={bk.name} width="md">
                   <BKDetailPanel bk={bk} />
                 </Panel>
               }
