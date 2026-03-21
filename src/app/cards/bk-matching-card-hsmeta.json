@@ -1,0 +1,11 @@
+{
+  "uid": "bk_matching_card",
+  "type": "card",
+  "config": {
+    "name": "BK Matching",
+    "description": "Zeigt passende Betreuungskräfte mit Match-Score für den aktuellen Deal.",
+    "entrypoint": "/app/cards/bk-matching-card.tsx",
+    "location": "crm.record.tab",
+    "objectTypes": ["DEAL"]
+  }
+}
