@@ -76,10 +76,23 @@ interface BKProfil {
   zertifikate: string;
 }
 
+interface BKBewertung {
+  durchschnitt: number;
+  anzahl: number;
+  freundlichkeit: number;
+  puenktlichkeit: number;
+  fachkenntnis: number;
+  kommunikation: number;
+  hygiene: number;
+  gesamt: number;
+  weiterempfehlungen: number;
+}
+
 interface BKDetails {
   contactId: string;
   agentur: string;
   profil: BKProfil;
+  bewertung: BKBewertung;
   link: string;
 }
 
@@ -134,6 +147,13 @@ const formatJaNein = (value: string): string => {
   if (v === "false" || v === "0" || v === "nein") return "Nein";
   if (v === "true" || v === "1" || v === "ja") return "Ja";
   return value;
+};
+
+const avgToStars = (avg: number): string => {
+  if (avg <= 0) return "";
+  const full = Math.round(avg);
+  const clamped = Math.max(1, Math.min(5, full));
+  return "★".repeat(clamped) + "☆".repeat(5 - clamped);
 };
 
 const getScoreVariant = (
@@ -408,6 +428,51 @@ function BKDetailPanel({ bk }: { bk: BKResult }) {
           )}
         </DescriptionList>
       </PanelSection>
+
+      {/* Bewertungen */}
+      {details.bewertung && details.bewertung.anzahl > 0 && (
+        <PanelSection>
+          <Text format={{ fontWeight: "bold" }}>Bewertungen</Text>
+          <DescriptionList direction="column">
+            <DescriptionListItem label={`Gesamt (${details.bewertung.anzahl} Bewertungen)`}>
+              <Text>{avgToStars(details.bewertung.durchschnitt)} {details.bewertung.durchschnitt.toFixed(1)}</Text>
+            </DescriptionListItem>
+            {details.bewertung.freundlichkeit > 0 && (
+              <DescriptionListItem label="Freundlichkeit">
+                <Text>{avgToStars(details.bewertung.freundlichkeit)} {details.bewertung.freundlichkeit.toFixed(1)}</Text>
+              </DescriptionListItem>
+            )}
+            {details.bewertung.puenktlichkeit > 0 && (
+              <DescriptionListItem label="Pünktlichkeit">
+                <Text>{avgToStars(details.bewertung.puenktlichkeit)} {details.bewertung.puenktlichkeit.toFixed(1)}</Text>
+              </DescriptionListItem>
+            )}
+            {details.bewertung.fachkenntnis > 0 && (
+              <DescriptionListItem label="Fachkenntnis">
+                <Text>{avgToStars(details.bewertung.fachkenntnis)} {details.bewertung.fachkenntnis.toFixed(1)}</Text>
+              </DescriptionListItem>
+            )}
+            {details.bewertung.kommunikation > 0 && (
+              <DescriptionListItem label="Kommunikation">
+                <Text>{avgToStars(details.bewertung.kommunikation)} {details.bewertung.kommunikation.toFixed(1)}</Text>
+              </DescriptionListItem>
+            )}
+            {details.bewertung.hygiene > 0 && (
+              <DescriptionListItem label="Hygiene">
+                <Text>{avgToStars(details.bewertung.hygiene)} {details.bewertung.hygiene.toFixed(1)}</Text>
+              </DescriptionListItem>
+            )}
+            {details.bewertung.gesamt > 0 && (
+              <DescriptionListItem label="Allg. Zufriedenheit">
+                <Text>{avgToStars(details.bewertung.gesamt)} {details.bewertung.gesamt.toFixed(1)}</Text>
+              </DescriptionListItem>
+            )}
+            <DescriptionListItem label="Weiterempfehlung">
+              <Text>{details.bewertung.weiterempfehlungen} von {details.bewertung.anzahl}</Text>
+            </DescriptionListItem>
+          </DescriptionList>
+        </PanelSection>
+      )}
 
       {/* Kontakt öffnen */}
       <PanelSection>
