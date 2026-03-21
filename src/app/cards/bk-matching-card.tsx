@@ -26,10 +26,10 @@ import { hubspot } from "@hubspot/ui-extensions";
 const API_BASE = "https://bp-matching-api.vercel.app";
 
 const STAR_DISPLAY: Record<number, string> = {
-  1: "★",
-  2: "★★",
-  3: "★★★",
-  4: "★★★★",
+  1: "★☆☆☆☆",
+  2: "★★☆☆☆",
+  3: "★★★☆☆",
+  4: "★★★★☆",
   5: "★★★★★",
 };
 
@@ -204,7 +204,7 @@ function BKDetailPanel({ bk }: { bk: BKResult }) {
         <Flex direction="column" gap="md">
           {bk.avatarUrl && (
             <Flex direction="row" justify="center">
-              <Image src={bk.avatarUrl} alt={bk.name} width={120} height={120} />
+              <Image src={bk.avatarUrl} alt={bk.name} width={120} />
             </Flex>
           )}
           <Flex direction="row" gap="sm" justify="center" align="center">
@@ -441,8 +441,10 @@ function BKMatchingCard({ context }: { context: any }) {
     setError(null);
 
     try {
+      const params = new URLSearchParams({ dealId });
+      if (nurFreie) params.set("nurFreie", "1");
       const res = await hubspot.fetch(
-        `${API_BASE}/api/bk-match?dealId=${dealId}`
+        `${API_BASE}/api/bk-match?${params}`
       );
       const json: MatchResponse = await res.json();
 
@@ -460,7 +462,7 @@ function BKMatchingCard({ context }: { context: any }) {
 
   useEffect(() => {
     loadData();
-  }, [dealId]);
+  }, [dealId, nurFreie]);
 
   if (loading) {
     return (
@@ -491,9 +493,6 @@ function BKMatchingCard({ context }: { context: any }) {
   }
 
   const { results, meta } = data;
-  const filtered = nurFreie
-    ? results.filter((bk) => bk.einsatzStatus === "frei")
-    : results;
 
   return (
     <Flex direction="column" gap="md">
@@ -510,7 +509,7 @@ function BKMatchingCard({ context }: { context: any }) {
             onChange={(checked) => setNurFreie(checked)}
           />
           <Text variant="microcopy">
-            {filtered.length} von {meta?.totalBKs} angezeigt
+            {results.length} von {meta?.totalBKs} angezeigt
           </Text>
         </Flex>
       </Flex>
@@ -518,13 +517,13 @@ function BKMatchingCard({ context }: { context: any }) {
       <Divider />
 
       {/* Ergebnis-Tiles */}
-      {filtered.map((bk) => (
+      {results.map((bk) => (
         <Tile key={bk.contactId} compact={true}>
           {/* Obere Zeile */}
           <Flex direction="row" justify="between" align="center" gap="md">
             <Flex direction="row" gap="sm" align="center">
               {bk.avatarUrl && (
-                <Image src={bk.avatarUrl} alt={bk.name} width={40} height={40} />
+                <Image src={bk.avatarUrl} alt={bk.name} width={40} />
               )}
               <Link href={bk.link}>
                 <Text format={{ fontWeight: "bold" }}>{bk.name}</Text>
