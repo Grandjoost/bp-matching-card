@@ -1,0 +1,43 @@
+{
+  "uid": "generate_bewertungslink",
+  "type": "workflow-action",
+  "config": {
+    "actionUrl": "https://bp-feedback.vercel.app/api/generate-link-workflow",
+    "isPublished": true,
+    "supportedClients": [
+      {
+        "client": "WORKFLOWS"
+      }
+    ],
+    "labels": {
+      "de": {
+        "actionName": "Bewertungslink generieren",
+        "actionDescription": "Generiert einen personalisierten Bewertungslink für den Betreuungseinsatz und speichert ihn auf dem Service-Objekt.",
+        "inputFieldLabels": {},
+        "inputFieldDescriptions": {},
+        "outputFieldLabels": {
+          "bewertung_link": "Bewertungslink"
+        }
+      },
+      "en": {
+        "actionName": "Generate feedback link",
+        "actionDescription": "Generates a personalized feedback link for the care service and saves it to the service object.",
+        "inputFieldLabels": {},
+        "inputFieldDescriptions": {},
+        "outputFieldLabels": {
+          "bewertung_link": "Feedback Link"
+        }
+      }
+    },
+    "objectTypes": ["0-162"],
+    "inputFields": [],
+    "outputFields": [
+      {
+        "typeDefinition": {
+          "name": "bewertung_link",
+          "type": "string"
+        }
+      }
+    ]
+  }
+}
