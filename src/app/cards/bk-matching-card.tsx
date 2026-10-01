@@ -70,6 +70,7 @@ interface BKProfil {
   pflegeerfahrungJahre: string;
   erfahrung: string;
   transferKg: string;
+  anzahlPflegebedurftige: string;
   letzteEinsaetze: string;
   ausbildungen: string;
   sonstigeAusbildung: string;
@@ -465,11 +466,16 @@ function BKDetailPanel({ bk }: { bk: BKResult }) {
               <Text>{profil.transferKg} kg</Text>
             </DescriptionListItem>
           )}
+          {profil.anzahlPflegebedurftige && (
+            <DescriptionListItem label="Max. Pflegebedürftige">
+              <Text>{profil.anzahlPflegebedurftige === "zwei" ? "Zwei" : "Eine"}</Text>
+            </DescriptionListItem>
+          )}
           {profil.letzteEinsaetze && (
             <DescriptionListItem label="Letzte Einsätze">
-              <Flex direction="column" gap="xs">
-                {profil.letzteEinsaetze.split("\n").filter(Boolean).map((line: string, i: number) => (
-                  <Text key={i}>{line}</Text>
+              <Flex direction="column" gap="flush">
+                {profil.letzteEinsaetze.split("\n").map((line: string, i: number) => (
+                  <Text key={i}>{line || "\u00A0"}</Text>
                 ))}
               </Flex>
             </DescriptionListItem>
